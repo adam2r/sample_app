@@ -1,5 +1,7 @@
 class User < ApplicationRecord
 	
+has_many :microposts, dependent: :destroy
+	
 attr_accessor :remember_token, :activation_token
   before_save   :downcase_email
   before_create :create_activation_digest
@@ -58,7 +60,11 @@ attr_accessor :remember_token, :activation_token
   end
 
 
-
+# Defines a proto-feed.
+  # See "Following users" for the full implementation.
+  def feed
+    Micropost.where("user_id = ?", id)
+  end
 
 
 private
