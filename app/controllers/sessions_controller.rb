@@ -1,4 +1,9 @@
 class SessionsController < ApplicationController
+  
+require 'mixpanel-ruby'
+
+
+
   def new
   end
 
@@ -8,6 +13,12 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       if user.activated?
         log_in user
+        tracker = Mixpanel::Tracker.new('872690784c41f5f6b2e84b0cf19c81bd')
+        tracker.track(user.id, 'Signed In')
+        tracker.people.set(user.id, {    # we already have user object, setting its ID using the object
+    '$first_name'       => user.name,
+    '$email'            => user.email
+})
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
         redirect_back_or user
       else
